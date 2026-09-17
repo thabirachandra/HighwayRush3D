@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Loading */
+
+#loading {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background: #111;
+    color: white;
+
+    z-index: 20;
+}
+
+#loading h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+#loading p {
+    font-size: 16px;
+}
+
+/* HUD */
+
+#hud {
+    position: fixed;
+    top: 20px;
+    left: 0;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    color: white;
+
+    z-index: 10;
+
+    pointer-events: none;
+}
+
+.speed {
+    background: rgba(0, 0, 0, 0.55);
+
+    padding: 10px 15px;
+
+    border-radius: 12px;
+
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.speed small {
+    font-size: 11px;
+}
+
+.coins {
+    background: rgba(0, 0, 0, 0.55);
+
+    padding: 10px 15px;
+
+    border-radius: 12px;
+
+    font-size: 20px;
+}
