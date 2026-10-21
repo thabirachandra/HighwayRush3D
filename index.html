@@ -1,50 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
-
-    <title>Highway Rush 3D</title>
-
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#070b14">
+<title>Highway Rush 3D</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <!-- Game Canvas -->
-    <div id="game"></div>
-
-    <!-- Loading Screen -->
-    <div id="loading">
-        <h1>HIGHWAY RUSH 3D</h1>
-        <p>Loading...</p>
-    </div>
-
-    <!-- Game HUD -->
-    <div id="hud">
-
-        <div class="speed">
-            <span id="speed">0</span>
-            <small>KM/H</small>
-        </div>
-
-        <div class="coins">
-            🪙 <span id="coins">0</span>
-        </div>
-
-    </div>
-
-    <!-- Three.js -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js">
-    </script>
-
-    <!-- Game JavaScript -->
-    <script src="js/main.js"></script>
-
+<div id="loading"><div class="loader"></div><b>HIGHWAY RUSH 3D</b><small>BUILDING YOUR RIDE...</small></div>
+<div id="game">
+  <header class="top"><div class="brand"><span class="brandmark">H</span><span>HIGHWAY<small>RUSH 3D</small></span></div><button id="soundBtn" class="icon">♫</button></header>
+  <section id="menu" class="panel">
+    <div class="eyebrow">ARCADE STREET RACING</div><h1>OWN THE<br><em>HIGHWAY.</em></h1>
+    <p>Choose your machine. Beat the traffic. Chase your best run.</p>
+    <div class="car-preview"><div class="car-art" id="carArt">◆</div><div><small>YOUR MACHINE</small><h2 id="carName">APEX GT</h2><div id="carDots" class="dots"></div></div><div class="pick"><button id="prevCar">‹</button><button id="nextCar">›</button></div></div>
+    <div class="menu-stats"><div><small>BEST DISTANCE</small><b id="menuBest">0 m</b></div><div><small>COINS BANKED</small><b id="menuCoins">0</b></div></div>
+    <button id="startBtn" class="primary">START RACE <span>→</span></button>
+    <div class="hint">← → STEER &nbsp; • &nbsp; SPACE NITRO &nbsp; • &nbsp; P PAUSE</div>
+  </section>
+  <div id="hud" hidden>
+    <div class="hudrow"><div class="hudbox"><small>SPEED</small><div><b id="speed">0</b><span> KM/H</span></div></div><div class="hudbox right"><small>DISTANCE</small><div><b id="distance">0</b><span> M</span></div></div></div>
+    <div class="hudrow"><div class="pill">◆ <b id="coins">0</b></div><div class="pill">BEST <b id="best">0 m</b></div><button id="pauseBtn" class="icon">Ⅱ</button></div>
+    <div class="nitro"><div><span>NITRO</span><b id="nitroText">100%</b></div><div class="bar"><i id="nitroBar"></i></div></div>
+  </div>
+  <div id="controls" hidden>
+    <div class="steering"><button data-key="left">◀</button><button data-key="right">▶</button></div>
+    <div class="pedals"><button data-key="brake" class="brake">BRAKE</button><button data-key="gas" class="gas">GAS</button><button data-key="nitro" class="boost">⚡</button></div>
+  </div>
+  <div id="pausePanel" class="modal" hidden><div class="modalcard"><div class="eyebrow">TAKE A BREATHER</div><h2>RACE PAUSED</h2><button id="resumeBtn" class="primary">RESUME</button><button id="quitBtn" class="secondary">GARAGE</button></div></div>
+  <div id="overPanel" class="modal" hidden><div class="modalcard"><div class="eyebrow">RUN COMPLETE</div><h2>CRASHED OUT</h2><div class="result"><div><small>DISTANCE</small><b id="finalDistance">0 m</b></div><div><small>COINS</small><b id="finalCoins">0</b></div></div><button id="retryBtn" class="primary">RACE AGAIN ↻</button><button id="garageBtn" class="secondary">BACK TO GARAGE</button></div></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
