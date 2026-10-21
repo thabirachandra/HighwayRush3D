@@ -5,6 +5,14 @@ const colors = ['#ff6938','#35d9ff','#bd75ff','#f5d34f'];
 const cars = [{name:'APEX GT',color:colors[0]},{name:'VOLT XR',color:colors[1]},{name:'PHANTOM',color:colors[2]},{name:'SOLAR R',color:colors[3]}];
 let selected=0,scene,camera,renderer,player,roadLines=[],traffic=[],pickups=[],buildings=[],clock;
 let running=false,paused=false,ended=false,speed=0,distance=0,coins=0,nitro=100,score=0,best=+(localStorage.getItem('hr3d_best')||0),bank=+(localStorage.getItem('hr3d_coins')||0);
+const carPrices=[0,250,500,1000];
+let unlocked;
+try {
+ unlocked=JSON.parse(localStorage.getItem('hr3d_unlocked')||'[0]');
+ if(!Array.isArray(unlocked)) unlocked=[0];
+} catch(e) { unlocked=[0]; }
+if(!unlocked.includes(0)) unlocked.push(0);
+
 const keys={left:false,right:false,gas:false,brake:false,nitro:false};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function material(color,roughness=.5,metalness=.1){return new THREE.MeshStandardMaterial({color,roughness,metalness});}
@@ -50,14 +58,39 @@ function init(){
 }
 function spawnTraffic(z){const palette=['#f1f4f7','#e44c3b','#2d8dc5','#f0bc45','#343e52'];const c=makeCar(palette[Math.floor(Math.random()*palette.length)]);c.scale.set(.92,.92,.92);c.position.set([-2.8,0,2.8][Math.floor(Math.random()*3)],0,z);c.userData={speed:12+Math.random()*18};scene.add(c);traffic.push(c);}
 function spawnCoin(z){const g=new THREE.Group();const ring=new THREE.Mesh(new THREE.TorusGeometry(.42,.12,8,18),material('#ffd447',.25,.75));ring.rotation.y=Math.PI/2;g.add(ring);const light=new THREE.PointLight('#ffcb36',.6,2);g.add(light);g.position.set([-2.8,0,2.8][Math.floor(Math.random()*3)],1.1,z);scene.add(g);pickups.push(g);}
-function updateGarage(){ $('carName').textContent=cars[selected].name;$('carArt').style.color=cars[selected].color;$('carArt').textContent='◆';$('carDots').innerHTML=cars.map((c,i)=>`<span class="dot" style="background:${c.color};opacity:${i===selected?1:.35}"></span>`).join('');$('menuBest').textContent=best+' m';$('menuCoins').textContent=bank;}
+function updateGarage(){
+ $('carName').textContent=cars[selected].name;
+ $('carArt').style.color=cars[selected].color;
+ $('carArt').textContent=unlocked.includes(selected)?'◆':'🔒';
+ $('carDots').innerHTML=cars.map((c,i)=>`<span class="dot" style="background:${c.color};opacity:${i===selected?1:.35}"></span>`).join('');
+ $('menuBest').textContent=best+' m';
+ $('menuCoins').textContent=bank;
+ const isUnlocked=unlocked.includes(selected);
+ $('unlockCar').hidden=isUnlocked;
+ $('unlockCar').textContent='UNLOCK '+cars[selected].name+' — '+carPrices[selected]+' COINS';
+ $('startBtn').disabled=!isUnlocked;
+}
 function resetRace(){for(const t of traffic)scene.remove(t);for(const p of pickups)scene.remove(p);traffic=[];pickups=[];speed=0;distance=0;coins=0;nitro=100;score=0;player.position.set(0,0,3);player.rotation.set(0,0,0);for(let i=0;i<7;i++)spawnTraffic(-22-i*22);for(let i=0;i<8;i++)spawnCoin(-18-i*16);$('distance').textContent='0';$('coins').textContent='0';$('best').textContent=best+' m';$('nitroBar').style.width='100%';$('nitroText').textContent='100%';}
 function start(){resetRace();$('menu').hidden=true;$('overPanel').hidden=true;$('pausePanel').hidden=true;$('hud').hidden=false;$('controls').hidden=false;running=true;paused=false;ended=false;}
 function pause(){if(!running||ended)return;paused=!paused;$('pausePanel').hidden=!paused;}
 function finish(){running=false;ended=true;$('controls').hidden=true;$('overPanel').hidden=false;$('finalDistance').textContent=Math.floor(distance)+' m';$('finalCoins').textContent=coins;bank+=coins;localStorage.setItem('hr3d_coins',bank);if(distance>best){best=Math.floor(distance);localStorage.setItem('hr3d_best',best);}updateGarage();}
 function toGarage(){$('menu').hidden=false;$('hud').hidden=true;$('controls').hidden=true;$('overPanel').hidden=true;$('pausePanel').hidden=true;running=false;paused=false;updateGarage();}
 function addEvents(){
- $('startBtn').onclick=start;$('retryBtn').onclick=start;$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('quitBtn').onclick=toGarage;$('garageBtn').onclick=toGarage;
+ $('unlockCar').onclick=()=>{
+  if(unlocked.includes(selected)) return;
+  const price=carPrices[selected];
+  if(bank<price){
+    $('unlockCar').textContent='NEED '+(price-bank)+' MORE COINS';
+    return;
+  }
+  bank-=price;
+  unlocked.push(selected);
+  localStorage.setItem('hr3d_coins',String(bank));
+  localStorage.setItem('hr3d_unlocked',JSON.stringify(unlocked));
+  updateGarage();
+};
+ $('startBtn').onclick=()=>{if(unlocked.includes(selected))start();};
+ $('retryBtn').onclick=start;$('pauseBtn').onclick=pause;$('resumeBtn').onclick=pause;$('quitBtn').onclick=toGarage;$('garageBtn').onclick=toGarage;
  $('prevCar').onclick=()=>{selected=(selected+cars.length-1)%cars.length;updateGarage();};$('nextCar').onclick=()=>{selected=(selected+1)%cars.length;updateGarage();};
  addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')keys.left=true;if(k==='arrowright'||k==='d')keys.right=true;if(k==='arrowup'||k==='w')keys.gas=true;if(k==='arrowdown'||k==='s')keys.brake=true;if(k===' '||k==='shift')keys.nitro=true;if(k==='p'||k==='escape')pause();});
  addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')keys.left=false;if(k==='arrowright'||k==='d')keys.right=false;if(k==='arrowup'||k==='w')keys.gas=false;if(k==='arrowdown'||k==='s')keys.brake=false;if(k===' '||k==='shift')keys.nitro=false;});
